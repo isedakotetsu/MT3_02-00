@@ -1,8 +1,10 @@
 #include <Novice.h>
+#include <cassert>
 #include <cmath>
-#include"math.h"
+#include <imgui.h>
 #include <numbers>
-#include<imgui.h>
+#include <algorithm>
+
 const char kWindowTitle[] = "LC1D_02_イセダ_コテツ_タイトル";
 struct Vector3
 {
@@ -86,20 +88,20 @@ Vector3 Project(const Vector3& v1, const Vector3& v2)
 
 	return result;
 }
+// 内積
+float Dot(const Vector3& v1, const Vector3& v2) {
+	float result = (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+	return result;
+}
 
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 {
 	Vector3 a = Subtract(point, segment.origin);
 
-	float dot = { a.x * segment.diff.x + a.y * segment.diff.y + a.z * segment.diff.z };
+	float t = std::clamp(Dot(a, segment.diff) / Dot(segment.diff, segment.diff), 0.0f, 1.0f);
 
-	float b2 = { segment.diff.x * segment.diff.x + segment.diff.y* segment.diff.y + segment.diff.z * segment.diff.z };
+	return Add(segment.origin, Multiply(t, segment.diff));
 
-	float t = dot / b2;
-
-	Vector3 cp =Add(segment.origin,Multiply(t,segment.diff));
-
-	return cp;
 }
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, Matrix4x4& viewportMatrix) {
 	// グリットの半分の幅
